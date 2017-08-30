@@ -41,29 +41,25 @@ def worker3(q,cur,conn,city):
     while True:
         if not q.empty():
             value = q.get()
-            print value
-            # insert(cur,conn,value,city)
+            insert(cur,conn,value,city)
             time.sleep(0.1)
         else:
-            print 'break'
+            print 'empty'
             break
 
 def insert(cur,conn,data,city):
-    pass
-    # date = data[0].string
-    # MaxTemperature = data[1]
-    # MinTemperature = data[2]
-    # Weather = data[3]
-    # WindDirection = data[4]
-    # AirClassification = data[5]
-    # #sql ="insert into T_%s_weather values(%s,%s,%s,%s)"
-    # #print city,date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification
-    # cur.execute("insert into T_%s_weather"%city+"(Date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification) values(%s,%s,%s,%s,%s,%s)", (date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification))
-    # conn.commit()
+    date = data[0].string
+    MaxTemperature = data[1]
+    MinTemperature = data[2]
+    Weather = data[3]
+    WindDirection = data[4]
+    AirClassification = data[5]
+    cur.execute("insert into T_%s_weather"%city+"(Date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification) values(%s,%s,%s,%s,%s,%s)", (date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification))
+    conn.commit()
 
 
 if __name__ == '__main__':
-    for city in citys_pinyin[16:]:
+    for city in citys_pinyin:
         baseurl = 'http://lishi.tianqi.com/%s/index.html'%(city)
         num = 7
         month_url = worker1(baseurl)
