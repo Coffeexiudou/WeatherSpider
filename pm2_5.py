@@ -93,6 +93,49 @@ def crawl(city,year):
     months = ['01','02','03','04','05','06','07','08','09','10','11','12']
     for month in months:
         getData(parse(city,year+month))
+
+
+def store(q,city):
+    time.sleep(5)
+    rows = []
+    BATCH = 500
+    while True:
+        if not q.empty():
+            row = q.get()
+            rows.append(row.values())
+            if len(rows) == BATCH:
+                print 'start insert {} 500'.format(city)
+                insert(rows,city)
+                rows = []
+        else:
+            if rows:
+                print 'start insert {l}'.format(l = len(rows))
+                insert(rows,city)
+            print 'empty'
+            break
+
+def insert(data,city):
+    conn,cur = connDB()
+    city = slug(city.decode('utf-8'),heteronym=False, separator='')  
+    sql = 'insert into T_{city}_air_quality (PM25,CO,PM10,O3_8h,QualityGrade,Rank,SO2,Date,AQI,NO2 ) values({data})'.format(city=city,data=', '.join(['%s']*10))
+    cur.executemany(sql,data) 
+    conn.commit()
+    print 'insert success'
+    closeDB(cur,conn)
 if __name__ == '__main__':
-  #  year = ['2013','2014','2015','2016','2017']
-    crawl('深圳','2013')
+    years = ['2013','2014','2015','2016','2017']
+    for city in citys:
+        q = Queue()
+        spider_list =[]
+        for i in xrange(5):
+            spider = Process(target=crawl,args=(city,years[i],q))
+            spider.start()
+            spider_list.append(spider)
+        store_p = Process(target=store,args=(q,city))
+        store_p.start()
+        print 'start store'+city.decode('utf-8')
+        store_p.join()
+        print 'store finish'+city.decode('utf-8')
+        for spider in spider_list:
+            spider.join()
+    print 'end'
