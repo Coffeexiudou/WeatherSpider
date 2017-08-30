@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup
 import pymysql
 from multiprocessing import Process,Queue
 import time
-from city import citys_pinyin,connDB,closeDB
+from city import citys_pinyin
+from sql import connDB,closeDB
 
 def getPage(url):
     try:
@@ -40,23 +41,25 @@ def worker3(q,cur,conn,city):
     while True:
         if not q.empty():
             value = q.get()
-            insert(cur,conn,value,city)
+            print value
+            # insert(cur,conn,value,city)
             time.sleep(0.1)
         else:
             print 'break'
             break
 
 def insert(cur,conn,data,city):
-    date = data[0].string
-    MaxTemperature = data[1]
-    MinTemperature = data[2]
-    Weather = data[3]
-    WindDirection = data[4]
-    AirClassification = data[5]
-    #sql ="insert into T_%s_weather values(%s,%s,%s,%s)"
-    #print city,date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification
-    cur.execute("insert into T_%s_weather"%city+"(Date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification) values(%s,%s,%s,%s,%s,%s)", (date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification))
-    conn.commit()
+    pass
+    # date = data[0].string
+    # MaxTemperature = data[1]
+    # MinTemperature = data[2]
+    # Weather = data[3]
+    # WindDirection = data[4]
+    # AirClassification = data[5]
+    # #sql ="insert into T_%s_weather values(%s,%s,%s,%s)"
+    # #print city,date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification
+    # cur.execute("insert into T_%s_weather"%city+"(Date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification) values(%s,%s,%s,%s,%s,%s)", (date,MaxTemperature,MinTemperature,Weather,WindDirection,AirClassification))
+    # conn.commit()
 
 
 if __name__ == '__main__':
